@@ -17,28 +17,27 @@ def pregunta_01():
     Carga de datos.
     -------------------------------------------------------------------------------------
     """
-
-    # Lea el archivo `amazon_cells_labelled.tsv` y cree un DataFrame usando pandas.
+ # Lea el archivo `amazon_cells_labelled.tsv` y cree un DataFrame usando pandas.
     # Etiquete la primera columna como `msg` y la segunda como `lbl`. Esta función
     # retorna el dataframe con las dos columnas.
-    df = ____(
-        ____,
-        sep=____,
-        header=____,
-        names=____,
+    df = pd.read_csv(
+        "amazon_cells_labelled.tsv",
+        sep="\t",
+        header=None,
+        names=["msg", "lbl"],
     )
+    #print(df)
+    
+    df_tagged =df[df["lbl"].notnull()]
+    df_untagged = df[df["lbl"].isnull()]
 
-    # Separe los grupos de mensajes etiquetados y no etiquetados.
-    df_tagged = ____[____["____"].____()]
-    df_untagged = ____[____["____"].____()]
+    x_tagged = df_tagged["msg"]
+    y_tagged = df_tagged["lbl"]
 
-    x_tagged = ____["____"]
-    y_tagged = ____["____"]
+    x_untagged = df_untagged["msg"]
+    y_untagged = df_untagged["lbl"]
 
-    x_untagged = ____["____"]
-    y_untagged = ____["____"]
-
-    # Retorne los grupos de mensajes
+    
     return x_tagged, y_tagged, x_untagged, y_untagged
 
 
