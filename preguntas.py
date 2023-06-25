@@ -47,24 +47,24 @@ def pregunta_02():
     -------------------------------------------------------------------------------------
     """
 
-    # Importe train_test_split
-    from ____ import ____
 
-    # Cargue los datos generados en la pregunta 01.
+    from sklearn.model_selection import train_test_split
+   
+
+    
     x_tagged, y_tagged, _, _ = pregunta_01()
+    #en la linea 55 Cargue los datos generados en la pregunta 01.
+    
 
-    # Divida los datos de entrenamiento y prueba. La semilla del generador de números
-    # aleatorios es 12345. Use el 10% de patrones para la muestra de prueba.
     x_train, x_test, y_train, y_test = train_test_split(
-        ____,
-        ____,
-        test_size=____,
-        random_state=____,
+        x_tagged,
+        y_tagged,
+        test_size=0.1,
+        #aca estamos utilizando el 10% de los datos y en la linea de abajo estamos definiendo la semilla 12345
+        random_state=12345,
     )
 
-    # Retorne `X_train`, `X_test`, `y_train` y `y_test`
     return x_train, x_test, y_train, y_test
-
 
 def pregunta_03():
     """
