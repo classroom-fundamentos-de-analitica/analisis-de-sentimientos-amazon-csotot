@@ -71,17 +71,11 @@ def pregunta_03():
     Construcción de un analizador de palabras
     -------------------------------------------------------------------------------------
     """
-    # Importe el stemmer de Porter
-    # Importe CountVectorizer
-    from ____ import ____
+    from nltk.stem.porter import PorterStemmer
+    from sklearn.feature_extraction.text import CountVectorizer
 
-    # Cree un stemeer que use el algoritmo de Porter.
-    stemmer = ____
-
-    # Cree una instancia del analizador de palabras (build_analyzer)
-    analyzer = ____().____()
-
-    # Retorne el analizador de palabras
+    stemmer = PorterStemmer()
+    analyzer = CountVectorizer().build_analyzer()
     return lambda x: (stemmer.stem(w) for w in analyzer(x))
 
 
@@ -90,58 +84,57 @@ def pregunta_04():
     Especificación del pipeline y entrenamiento
     -------------------------------------------------------------------------------------
     """
-
-    # Importe CountVetorizer
+#primera parte / importancion de liberias necesarias para los datos que vamos a utilizar 
+     # Importe CountVetorizer
+    from sklearn.feature_extraction.text import CountVectorizer
+    #https://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text.CountVectorizer.html
     # Importe GridSearchCV
+    from sklearn.model_selection import GridSearchCV
+    #https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GridSearchCV.html
     # Importe Pipeline
+    from sklearn.pipeline import Pipeline
+    #https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html
     # Importe BernoulliNB
-    from ____ import ____
-
-    # Cargue las variables.
+    from sklearn.naive_bayes import BernoulliNB
+    #https: // scikit - learn.org / stable / modules / generated / sklearn.naive_bayes.BernoulliNB.html
+     # variables.
     x_train, _, y_train, _ = pregunta_02()
 
-    # Obtenga el analizador de la pregunta 3.
+    #analizador de la pregunta 3.
     analyzer = pregunta_03()
 
-    # Cree una instancia de CountVectorizer que use el analizador de palabras
-    # de la pregunta 3. Esta instancia debe retornar una matriz binaria. El
-    # límite superior para la frecuencia de palabras es del 100% y un límite
-    # inferior de 5 palabras. Solo deben analizarse palabras conformadas por
-    # letras.
-    countVectorizer = ____(
-        analyzer=____,
-        lowercase=____,
-        stop_words=____,
-        token_pattern=____,
-        binary=____,
-        max_df=____,
-        min_df=____,
+    # matriz par aanalizar palabras conformadas por letras
+    countVectorizer = CountVectorizer(
+        analyzer=analyzer,
+        lowercase=True,
+        stop_words="english",
+        token_pattern=r"\b\w\w+\b",
+        binary=True,
+        max_df=1.0,
+        min_df=5,
     )
 
-    # Cree un pipeline que contenga el CountVectorizer y el modelo de BernoulliNB.
-    pipeline = ____(
+    # pipeline para Bernoulli 
+    pipeline = Pipeline(
         steps=[
-            ("____", ____),
-            ("____", ____()),
+            ("CountVectorizer", countVectorizer),
+            ("BernoulliNB", BernoulliNB()),
         ],
     )
 
-    # Defina un diccionario de parámetros para el GridSearchCV. Se deben
-    # considerar 10 valores entre 0.1 y 1.0 para el parámetro alpha de
-    # BernoulliNB.
+    # diccionario
     param_grid = {
-        "____": np.____(____, ____, ____),
+        "BernoulliNB__alpha": np.linspace(0.1,1,10)
     }
 
-    # Defina una instancia de GridSearchCV con el pipeline y el diccionario de
-    # parámetros. Use cv = 5, y "accuracy" como métrica de evaluación
-    gridSearchCV = ____(
-        estimator=____,
-        param_grid=____,
-        cv=____,
-        scoring=____,
-        refit=____,
-        return_train_score=____,
+    # Defina una instancia de GridSearchCV  (biblioteca de aprendizaje automático) busca combinaciones posibles de hiper parametros 
+    gridSearchCV = GridSearchCV(
+        estimator=pipeline,
+        param_grid=param_grid,
+        cv=5,
+        scoring="accuracy",
+        refit=True,
+        return_train_score=False,
     )
 
     # Búsque la mejor combinación de regresores
@@ -151,6 +144,7 @@ def pregunta_04():
     return gridSearchCV
 
 
+
 def pregunta_05():
     """
     Evaluación del modelo
@@ -158,23 +152,24 @@ def pregunta_05():
     """
 
     # Importe confusion_matrix
-    from ____ import ____
+    from sklearn.metrics import confusion_matrix
+    #https://scikit-learn.org/stable/modules/generated/sklearn.metrics.confusion_matrix.html
 
-    # Obtenga el pipeline de la pregunta 3.
+    #pipeline de la pregunta 4.
     gridSearchCV = pregunta_04()
 
-    # Cargue las variables.
+    #variables.
     X_train, X_test, y_train, y_test = pregunta_02()
 
     # Evalúe el pipeline con los datos de entrenamiento usando la matriz de confusion.
-    cfm_train = ____(
-        y_true=____,
-        y_pred=____.____(____),
+    cfm_train = confusion_matrix(
+        y_true=y_train,
+        y_pred=gridSearchCV.predict(X_train),
     )
 
-    cfm_test = ____(
-        y_true=____,
-        y_pred=____.____(____),
+    cfm_test = confusion_matrix(
+        y_true=y_test,
+        y_pred=gridSearchCV.predict(X_test),
     )
 
     # Retorne la matriz de confusion de entrenamiento y prueba
@@ -187,15 +182,15 @@ def pregunta_06():
     -------------------------------------------------------------------------------------
     """
 
-    # Obtenga el pipeline de la pregunta 3.
+    #pipeline de la pregunta 4.
     gridSearchCV = pregunta_04()
 
-    # Cargue los datos generados en la pregunta 01.
+    # datos generados en la pregunta 01.
     _, _, X_untagged, _ = pregunta_01()
 
-    # pronostique la polaridad del sentimiento para los datos
+    # pronostico
     # no etiquetados
-    y_untagged_pred = ____.____(____)
+    y_untagged_pred = gridSearchCV.predict(X_untagged)
 
-    # Retorne el vector de predicciones
+    #vector de predicciones
     return y_untagged_pred
